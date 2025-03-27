@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the following metadata."
+title: "HelioBeamAI"
+authors:
+  - family-names: "Kuhl"
+    given-names: "Mathias"
+    affiliation: "German Aerospace Center (DLR)"
+date-released: 2025-09-09
+version: 1.0.0
+doi: https://doi.org/10.21203/rs.3.rs-6192986/v1
+url: "https://github.com/DLR-SF/HelioBeamAI"
+repository-code: "https://github.com/DLR-SF/HelioBeamAI"
+keywords:
+  - Deep Learning
+  - Transformer
+  - Flux Prediction
+  - Solar Tower Plants
+  - Heliostat
+license: "MIT"
