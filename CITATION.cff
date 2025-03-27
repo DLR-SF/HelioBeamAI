@@ -5,7 +5,7 @@ authors:
   - family-names: "Kuhl"
     given-names: "Mathias"
     affiliation: "German Aerospace Center (DLR)"
-date-released: 2025-09-09
+date-released: 2025-03-27
 version: 1.0.0
 doi: https://doi.org/10.21203/rs.3.rs-6192986/v1
 url: "https://github.com/DLR-SF/HelioBeamAI"
