@@ -3,12 +3,12 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "utis"
+name = "HelioBeamAI"
 version = "0.1.0"
 authors = [
   { name="Mathias Kuhl", email="mathias.kuhl@dlr.de" },
 ]
-description = "UNet-based Target Image Segmentation for Solar Tower Calibration"
+description = "Artificial Intelligence for Heliostat Beam Flux Prediction "
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -52,7 +52,6 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/ARTIST-Association/ARTIST"
 Issues = "https://github.com/DLR-SF/UTIS-HeliostatBeamCharacterization/issues"
 
 [tool.pytest.ini_options]
