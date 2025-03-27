@@ -42,3 +42,13 @@ HelioBeamAI/
 └── tests/  # Unit or integration tests for the project
 
 ```
+
+## Acknowledgments
+This work is supported by the [Helmholtz AI](https://www.helmholtz.ai/) platform grant.
+
+-----------
+<div align="center">
+  <a href="https://www.dlr.de/EN/Home/home_node.html"><img src="./logos/logo_dlr.svg" height="50px" hspace="3%" vspace="25px"></a>
+  <a href="https://www.fz-juelich.de/portal/EN/Home/home_node.html"><img src="./logos/logo_fzj.svg" height="50px" hspace="3%" vspace="25px"></a>
+  <a href="https://www.helmholtz.ai/"><img src="./logos/logo_hai.svg" height="25px" hspace="3%" vspace="25px"></a>
+</div>
