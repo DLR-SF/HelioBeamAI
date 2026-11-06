@@ -1,0 +1,20 @@
+# Recipe of the released model transformer/T2026.pt.
+# The release was warm-started from a dissertation model (T367n20, not released);
+# this config starts from the released VAE instead.
+name: T2026
+data:
+  path: data/fluxTransData2026.pt          # heliobeamai build-dataset --output data/fluxTransData2026.pt
+  split: T2026
+  batch_size: 16
+  num_workers: 4
+init:
+  vae: artifacts/vae/z64CH4.pt
+module:
+  lr: 1.0e-5
+  weight_decay: 1.0e-8
+trainer:
+  max_epochs: 10000
+  val_check_interval: 25
+  accelerator: gpu
+  devices: 1
+output: runs/transformer
