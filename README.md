@@ -96,9 +96,33 @@ rays = projector(spots, aim_points, cond[:, 0], powers=torch.tensor([30.0]))
 * For optimization loops: `projector.prepare(...)` once per geometry update,
   `projector.rays_from_prepared(...)` per iteration.
 
+### Receivers and total flux
+
+```python
+from heliobeamai import OVRReceiver, CylindricalReceiver
+from heliobeamai.predict import receiver_flux
+
+receiver = OVRReceiver(center=(0, 0, 55), width=8, height=8, resolution=(80, 80), tilt_deg=0)
+result = receiver_flux(field, receiver, ids, positions, aim_points, sun, dni=850, mirror_area=8.2,
+                       reflectivity=0.9)                      # P = DNI * A * rho * cos(incidence)
+receiver.visualize_flux_distribution(result["flux"])         # W/m^2, as seen from the field
+```
+
+`Receiver` subclasses implement `intersect(ray_directions, ray_origins)`;
+`project_flux(rays, soft=True)` bins differentiably. From the command line:
+
+```bash
+heliobeamai predict --heliostats field.csv --aim 0 0 55 --sun 180 45 --dni 850 \
+    --mirror-area 8.2 --reflectivity 0.9 --fallback 3.1 0.58 --output results/noon
+```
+
+`field.csv`: `heliostat_id,x,y,z` (optionally `aim_x,aim_y,aim_z,mirror_area,reflectivity`);
+`--context dataset.pt` encodes heliostats from their own calibration measurements.
+
 ## Training
 
 ```bash
+heliobeamai train-vae --images data/CalibrationDataFluxCentered --output runs/vae/z64CH4   # autoencoder
 heliobeamai build-dataset --output data/flux_2026.pt --seed 0 \
     --calibration-csv ... --heliostat-positions ... --flux-dir ...     # calibration dataset
 heliobeamai train-transformer configs/transformer/T2026.yaml           # transformer
@@ -111,7 +135,8 @@ heliobeamai train-transformer configs/transformer/example.yaml          # on exa
 
 * `configs/transformer/`: the 2026 model and the example; `--set key=value`
   overrides entries. Dataset splits: `heliobeamai.data.get_split`.
-* Dataset formats, image frame and the projection data: [docs/data.md](docs/data.md).
+* Dataset formats, how to build a dataset from calibration measurements, the
+  autoencoder and the projection data: [docs/data.md](docs/data.md).
 
 ## Repository
 
@@ -120,9 +145,11 @@ src/heliobeamai/
   models/        transformer, VAE, projection CNN, FluxModel (transformer + VAE)
   inference/     FluxPredictor (encoder cache), build_conditions, RayProjector
   data/          dataset builder, splits, batching, Lightning data module
-  training/      transformer (Lightning), projection CNN, losses, AdamP
+  training/      transformer (Lightning), VAE, projection CNN, losses, AdamP
   field.py       HelioBeamField (sources + one projection chain)
   sources.py     spot sources: TransformerSource, GaussianSource
+  receiver.py    receivers: PlanarReceiver, OVRReceiver, CylindricalReceiver
+  predict.py     receiver flux of a field (`heliobeamai predict`)
   checkpoints.py loading/saving (also the original dissertation checkpoints)
   artifacts.py   released model files: download, checksums
   cli.py         `heliobeamai` command
