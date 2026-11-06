@@ -1,9 +1,17 @@
 __pycache__/
-*.pyc
-*.pyo
-*.pyd
+*.py[cod]
+*.egg-info/
+.pytest_cache/
 venv/
 .env
-data/
-models/
+
+# model files, datasets and run outputs live outside git (see ARTIFACTS.md)
+/artifacts/
+/data/
+/runs/
+/results/
+/logs/
 lightning_logs/
+
+# not public: dissertation configs/examples/tests, verification tools, aimpoint-control handover
+/internal/

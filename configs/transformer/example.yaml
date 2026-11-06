@@ -1,0 +1,20 @@
+# Runs on the example data shipped in examples/data (5 heliostats, CPU, ~2 minutes):
+#   heliobeamai train-transformer configs/transformer/example.yaml
+# Fine-tunes the released T2026 model; shows the training setup, not a useful model.
+name: example
+data:
+  path: examples/data/calibration_2026.pt
+  split: T2026
+  batch_size: 5
+  num_workers: 0
+init:
+  checkpoint: artifacts/transformer/T2026.pt
+module:
+  lr: 1.0e-5
+  weight_decay: 1.0e-8
+trainer:
+  max_epochs: 5
+  val_check_interval: 1
+  accelerator: cpu
+  devices: 1
+output: runs/transformer

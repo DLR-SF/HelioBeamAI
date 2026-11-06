@@ -1,60 +1,59 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
-name = "HelioBeamAI"
-version = "0.1.0"
-authors = [
-  { name="Mathias Kuhl", email="mathias.kuhl@dlr.de" },
-]
-description = "Artificial Intelligence for Heliostat Beam Flux Prediction "
+name = "heliobeamai"
+version = "1.0.0.dev0"
+description = "Transformer-based heliostat focal spot and receiver flux prediction from calibration images"
 readme = "README.md"
-requires-python = ">=3.8"
+license = { file = "LICENSE" }
+authors = [{ name = "Mathias Kuhl", email = "mathias.kuhl@dlr.de" }]
+requires-python = ">=3.10"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
-    "Development Status :: 1 - Planning",
+    "Topic :: Scientific/Engineering",
 ]
+# inference only needs torch
 dependencies = [
-    # Core
-    "torch==2.1.0",
-    "torchvision==0.16.0",
-    "pytorch-lightning==2.1.2",
-
-    # Scientific computing
-    "numpy==1.26.0",
-    "scipy==1.11.3",
-    "pandas==2.1.2",
-
-    # Visualization
-    # "matplotlib==3.8.2",
-    # "seaborn==0.13.0",
-
-    # ML Utilities
-    # "scikit-learn==1.3.2",
-    "tqdm==4.66.1",
-
-    # Image processing
-    "opencv-python==4.8.1.78",
-
-    # DL Helpers
-    "tensorboard==2.15.0",
-
-    # Optimizers
-    "adamp==0.3.0",
-
-    # Tensor manipulation
-    "einops==0.6.1",
-
-    # Testing
-    "pytest==8.1.1"
+    "torch>=2.1",
+    "numpy>=1.24",
 ]
+
+[project.optional-dependencies]
+train = [
+    "pytorch-lightning>=2.1",
+    "tensorboard>=2.14",
+    "PyYAML>=6.0",
+]
+data = [
+    "pandas>=2.0",
+    "openpyxl>=3.1",
+    "pillow>=10.0",
+    "tqdm>=4.60",
+]
+examples = [
+    "matplotlib>=3.7",
+    "jupyter",
+]
+experiments = [
+    "heliobeamai[train,data]",
+    "matplotlib>=3.7",
+    "scipy>=1.10",
+]
+dev = [
+    "pytest>=7.0",
+]
+
+[project.scripts]
+heliobeamai = "heliobeamai.cli:main"
 
 [project.urls]
-Issues = "https://github.com/DLR-SF/UTIS-HeliostatBeamCharacterization/issues"
+Repository = "https://github.com/DLR-SF/HelioBeamAI"
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.pytest.ini_options]
-testpaths = [
-    "tests",
-]
+testpaths = ["tests"]
