@@ -2,7 +2,7 @@
   <img src="logos/HelioBeamAI.png" alt="logo" width="50%"/>
 </p>
 
-[![DOI](https://img.shields.io/badge/DOI-10.21203/rs.3.rs--6192986/v1-brightgreen)](https://doi.org/10.21203/rs.3.rs-6192986/v1)
+[![DOI](https://img.shields.io/badge/DOI-10.1016/j.solener.2025.113631-brightgreen)](https://doi.org/10.1016/j.solener.2025.113631)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 
