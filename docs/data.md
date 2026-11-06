@@ -68,14 +68,55 @@ example: `examples/data/calibration_2026.pt`):
 | `heliostat_ids` | `[H]` | heliostat ids |
 | `target_ids`, `target_groups`, `samples_per_target`, `min_total_samples`, `copied_heliostats` | | build metadata |
 
-Images: camera images of the calibration targets, rectified to the target
-plane, converted to flux density, centred on the centroid and resampled to
-6 m x 6 m (64 x 64 pixels). `heliobeamai build-dataset` selects the
-measurements per heliostat and target group from the calibration database
-and these images.
-
 Samples are stored in target blocks of `samples_per_target`; the first samples
 of each block are the held-out test samples of the dataset splits.
+
+### Building a dataset from calibration measurements
+
+`heliobeamai build-dataset` needs three inputs:
+
+| input | content |
+|---|---|
+| `--calibration-csv` | one row per calibration measurement: `id` (record id), `HeliostatId` (numeric, e.g. `10123` = AA23), `CalibrationTargetId`, `SunPosE/N/U` (unit vector towards the sun, east/north/up), `TargetOffsetE/N/U` (spot centroid on the target, m; height above sea level) |
+| `--heliostat-positions` | Excel sheet with `InternalName` (e.g. `AA23`) and `x`, `y`, `z` (m; height above sea level) |
+| `--flux-dir` | one flux image per measurement, `<id>.png`: flux density on the calibration target, **centred on the spot centroid, 6 m x 6 m, frame C** (row 0 at the top, column 0 at the east edge, i.e. the camera view of a target facing the field); any resolution |
+
+Heights are converted to the tower-base frame with the offset
+`HEIGHT_OFFSET_M = 87` m of the Jülich tower and targets are grouped by
+`TARGET_GROUPS_2026` (`heliobeamai.data.build_calibration`); both are
+plant-specific. The conditions are computed as sun vector, unit vector
+heliostat -> spot centroid and their distance.
+
+Processing per image: resized to 64 x 64, Gaussian smoothing (5 px kernel,
+sigma 1 px), scaled to mean 0.1, then reconstructed by the autoencoder `z64`
+(`--vae`, a posterior sample; `none` skips it). The transformer therefore
+learns from smooth, VAE-reconstructed images. Per heliostat and target group,
+`samples_per_target` measurements are chosen by max-min sampling of the sun
+position (azimuth, elevation).
+
+How the flux images are made from the camera images is plant-specific and
+not part of the package. For Jülich: the camera image of the target is
+rectified with the target markers, converted to flux density (a U-Net trained
+on the camera response) and centred on the spot centroid. What matters for
+HelioBeamAI is the result: flux density (not brightness) on the target plane,
+centred, 6 m x 6 m, in frame C, with the matching sun vector and spot
+position. A wrong image orientation (e.g. mirrored) is not detected by the
+training loss; check it against the spot positions as described in
+"Coordinates and image frame".
+
+### Autoencoder (VAE)
+
+The transformer works on 64-value latents of the images. The released VAEs
+were trained with `heliobeamai train-vae` (port of the original script, see
+`heliobeamai.training.vae`): mean squared reconstruction error, Adam
+(lr 1e-3), batch 256, 1000 epochs, on all centred flux images:
+
+```bash
+heliobeamai train-vae --images data/CalibrationDataFluxCentered --output runs/vae/z64CH4 --ch 4   # transformer VAE
+heliobeamai train-vae --images data/CalibrationDataFluxCentered --output runs/vae/z64 --ch 16     # dataset builder VAE
+```
+
+Training configs start from the VAE with `init: {vae: runs/vae/z64CH4/vae.pt}`.
 
 ## Projection dataset (projection CNN)
 

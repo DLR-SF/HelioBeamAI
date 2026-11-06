@@ -52,3 +52,19 @@ def test_configs_are_valid():
         assert isinstance(cfg["module"]["lr"], float) and isinstance(cfg["module"]["weight_decay"], float)
         init = cfg.get("init") or {}
         assert init.get("checkpoint") or init.get("vae"), path.name
+
+
+def test_vae_training_smoke(tmp_path):
+    pytest.importorskip("pytorch_lightning")
+    from heliobeamai import load_vae
+    from heliobeamai.training.vae import VAETrainConfig, load_images, train_vae
+    torch.manual_seed(0)
+    torch.save({"imgs": torch.rand(2, 6, 64, 64)}, tmp_path / "ds.pt")
+    images = load_images([tmp_path / "ds.pt"])
+    assert images.shape == (12, 1, 64, 64)
+    torch.testing.assert_close(images.mean(dim=(-1, -2)), torch.full((12, 1), 0.1))
+    out = train_vae(images, tmp_path / "vae", VAETrainConfig(epochs=1, batch_size=4, num_workers=0,
+                                                             accelerator="cpu"),
+                    enable_progress_bar=False, enable_model_summary=False)
+    vae = load_vae(out)
+    assert vae.to_latent(images[:2]).shape == (2, 1, 8, 8)
